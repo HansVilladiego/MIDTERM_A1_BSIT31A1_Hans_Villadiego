@@ -259,7 +259,7 @@ public class BookService
             ISBN = b.ISBN,
             Description = b.Description,
             Genre = b.Genre,
-            
+
             PublishedDate = b.PublishedDate,
             CoverImageUrl = _bookCopies.FirstOrDefault(bi => bi.Book.Id == b.Id)?.CoverImageUrl,
             AuthorName = _authors.FirstOrDefault(a => a.Books.Any(bk => bk.Id == b.Id))?.Name,
@@ -299,7 +299,7 @@ public class BookService
         book.Description = vm.Description;
         book.Genre = vm.Genre;
         book.PublishedDate = vm.PublishedDate;
-        
+
 
         var author = _authors.FirstOrDefault(a => a.Id == vm.AuthorId);
         if (author == null)
@@ -369,4 +369,26 @@ public class BookService
             return _instance;
         }
     }
+    public void AddCopies(Guid bookId, int numberOfCopies)
+    {
+        var book = _books.FirstOrDefault(b => b.Id == bookId);
+        if (book == null)
+        {
+            throw new KeyNotFoundException("Book not found");
+        }
+
+        for (int i = 0; i < numberOfCopies; i++)
+        {
+            var newCopy = new BookCopy
+            {
+                Id = Guid.NewGuid(),
+                Condition = "New",
+                Source = "Purchase",
+                AddedDate = DateTime.Now,
+                Book = book
+            };
+            _bookCopies.Add(newCopy);
+        }
+    }
+
 }
